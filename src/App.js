@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Navbar } from 'react-bootstrap';
-import Routes from "./Routes";
+import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
+import {Nav, Navbar, NavItem} from 'react-bootstrap';
+import {LinkContainer} from 'react-router-bootstrap';
+import Routes from './Routes';
 import './App.css';
 
 class App extends Component {
@@ -13,10 +14,23 @@ class App extends Component {
             <Navbar.Brand>
               <Link to='/'>Scratch</Link>
             </Navbar.Brand>
-            <Navbar.Toggle />
+            <Navbar.Toggle/>
           </Navbar.Header>
+          <Navbar.Collapse>
+            <Nav pullRight>
+              {/* WHY NOT?
+              <Link to='/signup'>Signup</Link>
+              */}
+              <LinkContainer to="/signup">
+                <NavItem>Signup</NavItem>
+              </LinkContainer>
+              <LinkContainer to="/login">
+                <NavItem>Login</NavItem>
+              </LinkContainer>
+            </Nav>
+          </Navbar.Collapse>
         </Navbar>
-        <Routes />
+        <Routes/>
       </div>
     );
   }
