@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import { Auth } from "aws-amplify";
 import "./Login.css";
 
 export default class Login extends Component {
@@ -22,8 +23,15 @@ export default class Login extends Component {
     });
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
+  
+    try {
+      await Auth.signIn(this.state.email, this.state.password);
+      alert("Logged in");
+    } catch (e) {
+      alert(e.message);
+    }
   }
 
   //Well explanation about this file in: https://serverless-stack.com/chapters/create-a-login-page.html
