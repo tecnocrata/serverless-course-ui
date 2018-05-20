@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import {Link} from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import { Auth } from 'aws-amplify';
@@ -45,6 +45,13 @@ class App extends Component {
   handleLogout = async event => {
     await Auth.signOut();
     this.userHasAuthenticated(false);
+    //Because App component does not have access to the router props directly 
+    //since it is not rendered inside a Route component. 
+    //To be able to use the router props in our App component 
+    //we will need to use the withRouter Higher-Order Component (or HOC). 
+    //TODO: Read https://reactjs.org/docs/higher-order-components.html
+    //TODO: Read https://reacttraining.com/react-router/web/api/withRouter
+    this.props.history.push('/login'); 
   }
 
   render() {
@@ -88,4 +95,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);

@@ -30,6 +30,7 @@ export default class Login extends Component {
       await Auth.signIn(this.state.email, this.state.password);
       //BTW I think aws-amplify is storing session info into LocalStorage
       this.props.userHasAuthenticated(true);
+      this.props.history.push('/'); //This method comes from React's Route component (React Router v4)
     } catch (e) {
       alert(e.message);
     }
