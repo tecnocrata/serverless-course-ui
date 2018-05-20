@@ -28,6 +28,7 @@ export default class Login extends Component {
   
     try {
       await Auth.signIn(this.state.email, this.state.password);
+      //BTWL I think aws-amplify is storing session info into LocalStorage
       this.props.userHasAuthenticated(true);
     } catch (e) {
       alert(e.message);
