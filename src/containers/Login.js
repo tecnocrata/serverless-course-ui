@@ -1,15 +1,17 @@
-import React, { Component } from "react";
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import { Auth } from "aws-amplify";
-import "./Login.css";
+import React, { Component } from 'react';
+import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { Auth } from 'aws-amplify';
+import LoaderButton from "../components/LoaderButton";
+import './Login.css';
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: "",
-      password: ""
+      isLoading: false,
+      email: '',
+      password: ''
     };
   }
 
@@ -25,12 +27,14 @@ export default class Login extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
+    this.setState({ isLoading: true });
   
     try {
       await Auth.signIn(this.state.email, this.state.password);
       //BTW I think aws-amplify is storing session info into LocalStorage
       this.props.userHasAuthenticated(true);
       this.props.history.push('/'); //This method comes from React's Route component (React Router v4)
+      this.setState({ isLoading: false });
     } catch (e) {
       alert(e.message);
     }
@@ -39,33 +43,34 @@ export default class Login extends Component {
   //Well explanation about this file in: https://serverless-stack.com/chapters/create-a-login-page.html
   render() {
     return (
-      <div className="Login">
+      <div className='Login'>
         <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="email" bsSize="large">
+          <FormGroup controlId='email' bsSize='large'>
             <ControlLabel>Email</ControlLabel>
             <FormControl
               autoFocus
-              type="email"
+              type='email'
               value={this.state.email}
               onChange={this.handleChange}
             />
           </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
+          <FormGroup controlId='password' bsSize='large'>
             <ControlLabel>Password</ControlLabel>
             <FormControl
               value={this.state.password}
               onChange={this.handleChange}
-              type="password"
+              type='password'
             />
           </FormGroup>
-          <Button
+          <LoaderButton
             block
-            bsSize="large"
+            bsSize='large'
             disabled={!this.validateForm()}
-            type="submit"
-          >
-            Login
-          </Button>
+            type='submit'
+            isLoading={this.state.isLoading}
+            text='Login'
+            loadingText='Logging in…'
+            />
         </form>
       </div>
     );
