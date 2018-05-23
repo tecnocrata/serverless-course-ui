@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   HelpBlock,
   FormGroup,
   FormControl,
   ControlLabel
-} from "react-bootstrap";
-import LoaderButton from "../components/LoaderButton";
-import "./Signup.css";
+} from 'react-bootstrap';
+import { Auth } from 'aws-amplify';
+import LoaderButton from '../components/LoaderButton';
+import './Signup.css';
 
 export default class Signup extends Component {
   constructor(props) {
@@ -14,10 +15,10 @@ export default class Signup extends Component {
 
     this.state = {
       isLoading: false,
-      email: "",
-      password: "",
-      confirmPassword: "",
-      confirmationCode: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
+      confirmationCode: '',
       newUser: null
     };
   }
@@ -42,28 +43,52 @@ export default class Signup extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
-
+  
     this.setState({ isLoading: true });
-
-    this.setState({ newUser: "test" }); //dummy value for the newUser state.
-
+  
+    try {
+      const newUser = await Auth.signUp({
+        username: this.state.email,
+        password: this.state.password
+      });
+      this.setState({
+        newUser
+      });
+    } catch (e) {
+      alert(e.message);
+    }
+  
     this.setState({ isLoading: false });
   }
-
+  
+  //There is a known issue if we refresh confirmation form 
+  //we will lost ability to complete signup process
+  //Please read these recomendations: https://serverless-stack.com/chapters/signup-with-aws-cognito.html
   handleConfirmationSubmit = async event => {
     event.preventDefault();
-
+  
     this.setState({ isLoading: true });
+  
+    try {
+      await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
+      await Auth.signIn(this.state.email, this.state.password);
+  
+      this.props.userHasAuthenticated(true);
+      this.props.history.push('/'); //Redirecting to Home Page
+    } catch (e) {
+      alert(e.message);
+      this.setState({ isLoading: false });
+    }
   }
 
   renderConfirmationForm() {
     return (
       <form onSubmit={this.handleConfirmationSubmit}>
-        <FormGroup controlId="confirmationCode" bsSize="large">
+        <FormGroup controlId='confirmationCode' bsSize='large'>
           <ControlLabel>Confirmation Code</ControlLabel>
           <FormControl
             autoFocus
-            type="tel"
+            type='tel'
             value={this.state.confirmationCode}
             onChange={this.handleChange}
           />
@@ -71,12 +96,12 @@ export default class Signup extends Component {
         </FormGroup>
         <LoaderButton
           block
-          bsSize="large"
+          bsSize='large'
           disabled={!this.validateConfirmationForm()}
-          type="submit"
+          type='submit'
           isLoading={this.state.isLoading}
-          text="Verify"
-          loadingText="Verifying…"
+          text='Verify'
+          loadingText='Verifying…'
         />
       </form>
     );
@@ -85,39 +110,39 @@ export default class Signup extends Component {
   renderForm() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <FormGroup controlId="email" bsSize="large">
+        <FormGroup controlId='email' bsSize='large'>
           <ControlLabel>Email</ControlLabel>
           <FormControl
             autoFocus
-            type="email"
+            type='email'
             value={this.state.email}
             onChange={this.handleChange}
           />
         </FormGroup>
-        <FormGroup controlId="password" bsSize="large">
+        <FormGroup controlId='password' bsSize='large'>
           <ControlLabel>Password</ControlLabel>
           <FormControl
             value={this.state.password}
             onChange={this.handleChange}
-            type="password"
+            type='password'
           />
         </FormGroup>
-        <FormGroup controlId="confirmPassword" bsSize="large">
+        <FormGroup controlId='confirmPassword' bsSize='large'>
           <ControlLabel>Confirm Password</ControlLabel>
           <FormControl
             value={this.state.confirmPassword}
             onChange={this.handleChange}
-            type="password"
+            type='password'
           />
         </FormGroup>
         <LoaderButton
           block
-          bsSize="large"
+          bsSize='large'
           disabled={!this.validateForm()}
-          type="submit"
+          type='submit'
           isLoading={this.state.isLoading}
-          text="Signup"
-          loadingText="Signing up…"
+          text='Signup'
+          loadingText='Signing up…'
         />
       </form>
     );
@@ -125,7 +150,7 @@ export default class Signup extends Component {
 
   render() {
     return (
-      <div className="Signup">
+      <div className='Signup'>
         {this.state.newUser === null
           ? this.renderForm()
           : this.renderConfirmationForm()}
