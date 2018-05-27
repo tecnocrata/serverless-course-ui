@@ -12,6 +12,6 @@ export default {
       REGION: "us-east-1",
       USER_POOL_ID: "us-east-1_7RVjoqdPt",
       APP_CLIENT_ID: "88pa0tnd8vc9v12p1bi9flbc8",
-      IDENTITY_POOL_ID: "20fd4fe1-185f-442d-9a49-b9037c001d56"
+      IDENTITY_POOL_ID: "us-east-1:20fd4fe1-185f-442d-9a49-b9037c001d56"
     }
   };
