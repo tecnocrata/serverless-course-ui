@@ -3,6 +3,7 @@ import { API, Storage } from 'aws-amplify';
 import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import LoaderButton from '../components/LoaderButton';
 import config from '../config';
+import { s3Upload } from '../libs/awsLib';
 import './Notes.css';
 
 export default class Notes extends Component {
@@ -63,7 +64,15 @@ export default class Notes extends Component {
     this.file = event.target.files[0];
   }
   
+  saveNote(note) {
+    return API.put('notes', `/notes/${this.props.match.params.id}`, {
+      body: note
+    });
+  }
+  
   handleSubmit = async event => {
+    let attachment;
+  
     event.preventDefault();
   
     if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
@@ -72,6 +81,21 @@ export default class Notes extends Component {
     }
   
     this.setState({ isLoading: true });
+  
+    try {
+      if (this.file) {
+        attachment = await s3Upload(this.file);
+      }
+  
+      await this.saveNote({
+        content: this.state.content,
+        attachment: attachment || this.state.note.attachment
+      });
+      this.props.history.push('/');
+    } catch (e) {
+      alert(e);
+      this.setState({ isLoading: false });
+    }
   }
   
   handleDelete = async event => {
