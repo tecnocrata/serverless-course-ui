@@ -98,6 +98,10 @@ export default class Notes extends Component {
     }
   }
   
+  deleteNote() {
+    return API.del('notes', `/notes/${this.props.match.params.id}`);
+  }
+  
   handleDelete = async event => {
     event.preventDefault();
   
@@ -110,6 +114,17 @@ export default class Notes extends Component {
     }
   
     this.setState({ isDeleting: true });
+  
+    try {
+      await this.deleteNote();
+      this.props.history.push('/');
+      //TODO: you might have noticed that we are not deleting the attachment when we are deleting a note
+      //TODO: Check https://aws.github.io/aws-amplify/api/classes/storageclass.html#remove
+      //TODO: On how to a delete file from S3.
+    } catch (e) {
+      alert(e);
+      this.setState({ isDeleting: false });
+    }
   }
   
   render() {
