@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { Auth } from 'aws-amplify';
-import LoaderButton from "../components/LoaderButton";
+import LoaderButton from '../components/LoaderButton';
 import './Login.css';
 
 export default class Login extends Component {
@@ -33,7 +33,7 @@ export default class Login extends Component {
       await Auth.signIn(this.state.email, this.state.password);
       //BTW I think aws-amplify is storing session info into LocalStorage
       this.props.userHasAuthenticated(true);
-      this.props.history.push('/'); //This method comes from React's Route component (React Router v4)
+      //this.props.history.push('/'); //This method comes from React's Route component (React Router v4)
       this.setState({ isLoading: false });
     } catch (e) {
       alert(e.message);
